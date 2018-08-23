@@ -1,0 +1,38 @@
+{
+  "name": "sc48hrcodetest",
+  "version": "1.0.0",
+  "description": "Facebook social login playlist maker with username/password admin backend",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/akkys77/sc48hrCodeTest.git"
+  },
+  "keywords": [
+    "Facebook",
+    "Spotify"
+  ],
+  "author": "AV",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/akkys77/sc48hrCodeTest/issues"
+  },
+  "homepage": "https://github.com/akkys77/sc48hrCodeTest#readme",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "connect-ensure-login": "^0.1.1",
+    "connect-flash": "^0.1.1",
+    "cookie-parser": "^1.4.3",
+    "debug": "^3.1.0",
+    "dotenv": "^6.0.0",
+    "express": "^4.16.3",
+    "express-session": "^1.15.6",
+    "morgan": "^1.9.0",
+    "passport": "^0.4.0",
+    "passport-auth0": "^1.0.0",
+    "pug": "^2.0.3",
+    "serve-favicon": "^2.5.0"
+  }
+}

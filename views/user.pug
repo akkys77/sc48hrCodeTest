@@ -1,0 +1,11 @@
+extends layout
+
+block content
+  br
+  .container
+    .card(style="width: 18rem;").mx-auto
+      img(src=user.picture,alt="Facebook Image Profile").card-img-top
+      h5 Welcome #{user.nickname}
+      p.card-text Create your Spotify Playlist.
+      //- h2 User Profile
+      //- pre #{userProfile}
