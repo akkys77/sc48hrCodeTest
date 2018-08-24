@@ -1,11 +1,4 @@
-const express = require("express");
-const passport = require("passport");
-const ensureLoggedIn = require("connect-ensure-login").ensureLoggedIn();
-const router = express.Router();
-
-const SpotifyWebApi = require("spotify-web-api-node");
-
-var playlist = [];
+var SpotifyWebApi = require("spotify-web-api-node");
 
 // Spotify Wrapper documentation
 // http://michaelthelin.se/spotify-web-api-node/
@@ -16,29 +9,20 @@ var playlist = [];
 //  Please note that this endpoint does not require authentication. However, using an access token
 //  when making requests will give your application a higher rate limit.
 
-const spotifyApi = new SpotifyWebApi({
+var spotifyApi = new SpotifyWebApi({
   clientId: "ebc7a632b02846e49ae54d902265da3a",
   clientSecret: "4eb7860bea054fb2a6c3f66ff6a8584b"
 });
 
-/* GET user profile. */
-// router.get("/", function(req, res, next) {
-router.get("/", ensureLoggedIn, function(req, res, next) {
-  res.render("user", {
-    user: req.user,
-    userProfile: JSON.stringify(req.user, null, "  "),
-    playlist: [],
-    results: []
-  });
-});
-router.post("/", function(req, res) {
-  // var searchTerms =req.params.terms;
-  var searchTerms = req.body.searchTerms;
+var results = [];
+
+var searchSong = function(searchTerms) {
+  // Get an access token and 'save' it using a setter
   spotifyApi
     .clientCredentialsGrant()
     .then(
       function(data) {
-        // console.log("The access token is " + data.body["access_token"]);
+        console.log("The access token is " + data.body["access_token"]);
         spotifyApi.setAccessToken(data.body["access_token"]);
       },
       function(err) {
@@ -46,7 +30,6 @@ router.post("/", function(req, res) {
       }
     )
     .then(function() {
-      let results = [];
       return spotifyApi.searchTracks(searchTerms).then(
         function(data) {
           // console.log(JSON.stringify(data.body));
@@ -61,8 +44,7 @@ router.post("/", function(req, res) {
               release_date: item.album.release_date
             });
           });
-          // console.log(results);
-          return results;
+          console.log(results);
           // console.log(JSON.stringify(data.body));
         },
         function(err) {
@@ -70,18 +52,7 @@ router.post("/", function(req, res) {
         }
       );
     })
-    .then(function(results) {
-      // console.log('results: ',results)
-      return res.render("user", { user: req.user, results: results });
-    })
     .catch(err => console.log(err));
-});
+};
+// console.log(searchSong);
 
-router.post("/savePlaylist", function(req, res) {
-  console.log(req.body);
-  // playlist = req.body.playlist;
-  // console.log(playlist);
-  res.render("user", { playlist: playlist });
-});
-
-module.exports = router;

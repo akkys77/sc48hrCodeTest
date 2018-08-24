@@ -3,9 +3,128 @@ extends layout
 block content
   br
   .container
-    .card(style="width: 18rem;").mx-auto
-      img(src=user.picture,alt="Facebook Image Profile").card-img-top
-      h5 Welcome #{user.nickname}
-      p.card-text Create your Spotify Playlist.
-      //- h2 User Profile
-      //- pre #{userProfile}
+    .row
+      if user
+        img(src=user.picture,alt="Facebook Image Profile",style="width:80px;height:80px")
+        h2.p-3 Welcome #{user.nickname}
+    .row
+      h3 Create your Spotify Playlist.
+  .container
+    //- form
+    form(action='/user',method='post',id='searchForm')
+      .form-group
+        .input-group.mb-3
+          input(name='searchTerms' type="text" class="form-control" placeholder="Type the name of the track you want to add to your Playlist")
+          .input-group-append
+            button.btn.btn-primary(type="submit") Search
+    #result
+  .container
+    .row
+      .col-md-6
+        .row
+          h4 Results
+        .row
+          ul.list-group
+            if results
+              each result in results
+                li.list-group-item
+                  .row
+                    .col-md-2
+                      img(src=result.image)
+                    .col-md-8
+                      .row
+                        span name: #{result.name}
+                      .row
+                        span artist: #{result.artist}
+                      .row
+                        span release date: #{result.release_date}
+                    .col-md-2.p-2
+                      button.addSong.btn.btn-secondary.btn-sm(type="button", onclick=`addToPlaylist(${JSON.stringify(result)})`) Add Song
+      .col-md-6
+        .row
+          h4 Playlist
+          button#savePlaylist.btn.btn-success.ml-auto(onclick=`savePlaylist(${JSON.stringify(playlist)})`) Save Playlist
+        .row
+          ul#playlist.list-group.col
+            if playlist
+              //- JSON.stringify(playlist)
+              each song in playlist
+                li.list-group-item
+                  .row
+                    .col-md-2
+                      img(src=song.image)
+                    .col-md-8
+                      .row
+                        span name: #{song.name}
+                      .row
+                        span artist: #{song.artist}
+                      .row
+                        span release date: #{song.release_date}
+                    .col-md-2.p-2
+                      button.btn.btn-secondary.btn-sm.m-r-2 Remove Song
+  script.
+    /*
+    $(document).on("submit","#searchForm", function( event ) {
+      event.preventDefault();
+      // Get some values from elements on the page:
+      var $form = $( this ),
+        term = $form.find( "input[name='searchTerms']" ).val(),
+        url = $form.attr( "action" );
+        console.log(term);
+        console.log(url);
+      // Send the data using post
+      var posting = $.post( url, { searchTerms: term } );
+      // Put the results in a div
+      posting.done(function( data ) {
+        //- console.log(data);
+        //- var content = $( data ).find( "#content" );
+        //- $( "#result" ).empty().append( data );
+      });
+    });
+    */
+    var playlist = [];
+    var renderPlaylist = function(item,index){
+      return `<li class="list-group-item">
+        <div class="row">
+          <div class="col-md-2">
+            <img src=${item.image}>
+          </div>
+          <div class="col-md-8">
+            <div class="row"><span>name: ${item.name}</span></div>
+            <div class="row"><span>artist: ${item.artist}</span></div>
+            <div class="row"><span>release date: ${item.release_date}</span></div>
+          </div>
+          <div class="col-md-2 p-2">
+            <button class="removeSong btn btn-alert btn-sm" type="button" onclick="removeSong(${index})")">Remove</button>
+          </div>
+        </div>
+      </li>`
+    }
+    var addToPlaylist = function(song){
+      playlist.push(song);
+      console.log(playlist);
+      $(document).on("click",".addSong", function(){
+        //- $("#playlist").html(JSON.stringify(playlist))
+        $("#playlist").html(playlist.map(function(item,index){return renderPlaylist(item,index)}))
+      })
+    }
+    var removeSong = function(index){
+      playlist.splice(index,1);
+      $(document).on("click",".removeSong", function(){
+        //- $("#playlist").html(JSON.stringify(playlist))
+        $("#playlist").html(playlist.map(function(item,index ){return renderPlaylist(item,index)}))
+      })
+      console.log(playlist);
+    }
+    var savePlaylist = function(playlist){
+      console.log(playlist);
+      $(document).on("click","#savePlaylist", function(){
+        var posting = $.post( '/user/savePlaylist', {playlist} );
+        // Put the results in a div
+        posting.done(function( data ) {
+          //- console.log(data);
+          console.log('playlist saved');
+        });
+      })
+      console.log(playlist);
+    }
