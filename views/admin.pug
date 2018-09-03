@@ -1,0 +1,35 @@
+extends layout
+
+block content
+  br
+  .container
+    .row
+      if user
+        img(src=user.picture,alt="Facebook Image Profile",style="width:80px;height:80px")
+        h2.p-3 Welcome Admin
+    .row
+      h3 See your user's Spotify Playlists.
+  .container
+    .row
+      .col-12
+        h4 Playlists
+        if playlists
+          each user in playlists
+            //- pre= JSON.stringify(user)
+            h5= `Playlist of user: ${user.user_id}`
+            .row
+            ul#playlist.list-group
+              -var playlist = user.user_playlist
+                each song, index in playlist
+                  li.list-group-item.d-flex.flex-row
+                    .p-2
+                      img(src=song.image)
+                    .p-2
+                      div
+                        span name: #{song.name}
+                      div
+                        span artist: #{song.artist}
+                      div
+                        span release date: #{song.release_date}
+        else 
+          p No Playlists yet

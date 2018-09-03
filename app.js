@@ -1,3 +1,4 @@
+const cors = require('cors');
 const express = require('express');
 const path = require('path');
 const favicon = require('serve-favicon');
@@ -8,21 +9,23 @@ const session = require('express-session');
 const dotenv = require('dotenv');
 const passport = require('passport');
 const Auth0Strategy = require('passport-auth0');
-const flash = require('connect-flash');
 
 dotenv.load();
 
+const { middleware } = require('./middleware');
 const routes = require('./routes/index');
 const user = require('./routes/user');
+const admin = require('./routes/admin');
+const { config } = require('./config');
 
+// console.log(middleware);
 // This will configure Passport to use Auth0
 const strategy = new Auth0Strategy(
   {
-    domain: process.env.AUTH0_DOMAIN,
-    clientID: process.env.AUTH0_CLIENT_ID,
-    clientSecret: process.env.AUTH0_CLIENT_SECRET,
-    callbackURL:
-      process.env.AUTH0_CALLBACK_URL || 'http://localhost:3000/callback'
+    domain: config.auth0Domain,
+    clientID: config.auth0Client,
+    clientSecret: config.auth0ClientSecret,
+    callbackURL: config.auth0CallbackUrl
   },
   function(accessToken, refreshToken, extraParams, profile, done) {
     // accessToken is the token to call Auth0 API (not needed in the most cases)
@@ -32,7 +35,23 @@ const strategy = new Auth0Strategy(
   }
 );
 
-passport.use(strategy);
+const strategyAdmin = new Auth0Strategy(
+  {
+    domain: config.auth0Domain,
+    clientID: config.auth0AdminClient,
+    clientSecret: config.auth0AdminClientSecret,
+    callbackURL: config.auth0AdminCallbackUrl
+  },
+  function(accessToken, refreshToken, extraParams, profile, done) {
+    // accessToken is the token to call Auth0 API (not needed in the most cases)
+    // extraParams.id_token has the JSON Web Token
+    // profile has all the information from the user
+    return done(null, profile);
+  }
+);
+
+passport.use('normal', strategy);
+passport.use('admin', strategyAdmin);
 
 // you can use this section to keep a smaller payload
 passport.serializeUser(function(user, done) {
@@ -45,12 +64,13 @@ passport.deserializeUser(function(user, done) {
 
 const app = express();
 
+app.use(cors());
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
 // uncomment after placing your favicon in /public
-app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -64,34 +84,15 @@ app.use(
 );
 app.use(passport.initialize());
 app.use(passport.session());
-app.use(express.static(path.join(__dirname, 'public')));
-
-app.use(flash());
-
-// Handle auth failure error messages
-app.use(function(req, res, next) {
- if (req && req.query && req.query.error) {
-   console.log(req.query.error);
-   req.flash("error", req.query.error);
- }
- if (req && req.query && req.query.error_description) {
-  console.log(req.query.error_description);
-  req.flash("error_description", req.query.error_description);
- }
- next();
-});
-
 // Check logged in
-app.use(function(req, res, next) {
-  res.locals.loggedIn = false;
-  if (req.session.passport && typeof req.session.passport.user != 'undefined') {
-    res.locals.loggedIn = true;
-  }
-  next();
-});
+app.use(middleware.getAuth0Info.loggedIn);
+// app.use(middleware.getAuth0Info.getAuth0Info());
+app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
+app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', routes);
 app.use('/user', user);
+app.use('/admin', admin);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

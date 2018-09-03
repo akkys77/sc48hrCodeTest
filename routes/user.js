@@ -1,9 +1,12 @@
-const express = require("express");
-const passport = require("passport");
-const ensureLoggedIn = require("connect-ensure-login").ensureLoggedIn();
+const express = require('express');
+const passport = require('passport');
+const ensureLoggedIn = require('connect-ensure-login').ensureLoggedIn();
 const router = express.Router();
 
-const SpotifyWebApi = require("spotify-web-api-node");
+const SpotifyWebApi = require('spotify-web-api-node');
+
+const { middleware } = require('../middleware');
+// console.log(middleware);
 
 var playlist = [];
 
@@ -17,21 +20,25 @@ var playlist = [];
 //  when making requests will give your application a higher rate limit.
 
 const spotifyApi = new SpotifyWebApi({
-  clientId: "ebc7a632b02846e49ae54d902265da3a",
-  clientSecret: "4eb7860bea054fb2a6c3f66ff6a8584b"
+  clientId: 'ebc7a632b02846e49ae54d902265da3a',
+  clientSecret: '4eb7860bea054fb2a6c3f66ff6a8584b'
 });
 
 /* GET user profile. */
 // router.get("/", function(req, res, next) {
-router.get("/", ensureLoggedIn, function(req, res, next) {
-  res.render("user", {
+// router.get('/', ensureLoggedIn, middleware.playlist.read(), function(
+router.get('/', ensureLoggedIn, middleware.playlist.read(), (req, res) => {
+  // console.log(res.locals.playlist);
+  res.render('user', {
     user: req.user,
-    userProfile: JSON.stringify(req.user, null, "  "),
-    playlist: [],
+    userProfile: JSON.stringify(req.user, null, '  '),
+    playlist: res.locals.playlist||{},
+    playlistArray: JSON.stringify(res.locals.playlist)||{},
     results: []
   });
 });
-router.post("/", function(req, res) {
+
+router.post('/searchSpotify', (req, res) => {
   // var searchTerms =req.params.terms;
   var searchTerms = req.body.searchTerms;
   spotifyApi
@@ -39,10 +46,10 @@ router.post("/", function(req, res) {
     .then(
       function(data) {
         // console.log("The access token is " + data.body["access_token"]);
-        spotifyApi.setAccessToken(data.body["access_token"]);
+        spotifyApi.setAccessToken(data.body['access_token']);
       },
       function(err) {
-        console.log("Something went wrong!", err);
+        console.log('Something went wrong!', err);
       }
     )
     .then(function() {
@@ -54,8 +61,9 @@ router.post("/", function(req, res) {
           data.body.tracks.items.map(item => {
             results.push({
               pos: i++,
-              name: item.name,
-              artist: item.artists.map(artist => artist.name),
+              name: encodeURIComponent(item.name),
+              artist: item.artists.map(artist => encodeURIComponent(artist.name)),
+              // artist: item.artist,
               id: item.id,
               image: item.album.images[2].url,
               release_date: item.album.release_date
@@ -66,22 +74,30 @@ router.post("/", function(req, res) {
           // console.log(JSON.stringify(data.body));
         },
         function(err) {
-          console.log("Something went wrong", err);
+          console.log('Something went wrong', err);
         }
       );
     })
     .then(function(results) {
       // console.log('results: ',results)
-      return res.render("user", { user: req.user, results: results });
+      // return res.render('user', { user: req.user, results: results });
+      res.json({
+        success: 'Updated Successfully',
+        results: results,
+        status: 200
+      });
     })
     .catch(err => console.log(err));
 });
 
-router.post("/savePlaylist", function(req, res) {
-  console.log(req.body);
-  // playlist = req.body.playlist;
-  // console.log(playlist);
-  res.render("user", { playlist: playlist });
-});
+// router.post('/savePlaylist', middleware.playlist.save(), (req, res) => {
+router.post(
+  '/savePlaylist',
+  middleware.getAuth0Info.getAuth0Info(),
+  middleware.playlist.save(),
+  (req, res) => {
+    res.json({ success: 'Updated Successfully', status: 200 });
+  }
+);
 
 module.exports = router;
