@@ -20,7 +20,7 @@ const config = {
   auth0Client: process.env.AUTH0_CLIENT_ID,
   auth0ClientSecret: process.env.AUTH0_CLIENT_SECRET,
   auth0CallbackUrl: process.env.NODE_ENV==='development'?'http://localhost:3000/callback':process.env.AUTH0_CALLBACK_URL,
-  auth0Redirect:process.env.NODE_ENV === 'development'?'http://localhost:3000':process.env.AUTH0_REDIRECT,
+  auth0Redirect:process.env.NODE_ENV === 'development'?'http://localhost:3000/user':process.env.AUTH0_REDIRECT,
   auth0AdminClient: process.env.AUTH0_ADMIN_CLIENT_ID,
   auth0AdminClientSecret: process.env.AUTH0_ADMIN_CLIENT_SECRET,
   auth0AdminCallbackUrl: process.env.NODE_ENV==='development'?'http://localhost:3000/admin/callback':process.env.AUTH0_ADMIN_CALLBACK_URL,

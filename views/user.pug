@@ -83,8 +83,8 @@ block content
           <img src=${item.image}>
         </div>
         <div class="p-2">
-          <div><span>name: ${decodeURI(item.name)}</span></div>
-          <div><span>artist: ${decodeURI(item.artist)}</span></div>
+          <div><span>name: ${decodeURIComponent(item.name)}</span></div>
+          <div><span>artist: ${decodeURIComponent(item.artist)}</span></div>
           <div><span>release date: ${item.release_date}</span></div>
         </div>
         <div class="p-2 ml-auto">
@@ -99,8 +99,8 @@ block content
           <img src=${item.image}>
         </div>
         <div class="p-2">
-          <div><span>name: ${decodeURI(item.name)}</span></div>
-          <div><span>artist: ${decodeURI(item.artist)}</span></div>
+          <div><span>name: ${decodeURIComponent(item.name)}</span></div>
+          <div><span>artist: ${decodeURIComponent(item.artist)}</span></div>
           <div><span>release date: ${item.release_date}</span></div>
         </div>
         <div class="p-2 ml-auto">
