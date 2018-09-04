@@ -1,33 +1,28 @@
 const express = require('express');
-const passport = require('passport');
 const router = express.Router();
 
-const { config } = require('../config');
 const { middleware } = require('../middleware');
-/* GET home page. */
+
 router.get('/', function(req, res) {
   res.render('index');
 });
 
-router.get('/login', middleware.getAuth0Info.authenticate(), function(
-  req,
-  res
-) {
-  res.redirect('/');
+router.get('/login', middleware.getAuth0Info.authenticate(), (req, res) => {
+  res.redirect('/user');
 });
 
-router.get('/logout', function(req, res) {
+router.get('/logout', (req, res) => {
   req.logout();
   res.redirect('/');
 });
 
 router.get('/callback', middleware.getAuth0Info.authenticate(), (req, res) => {
-  res.redirect(req.session.returnTo || '/user');
+  res.redirect('/user');
 });
 
-router.get('/failure', function(req, res) {
-  var error = req.flash('error');
-  var error_description = req.flash('error_description');
+router.get('/failure', (req, res) => {
+  let error = req.flash('error');
+  let error_description = req.flash('error_description');
   req.logout();
   res.render('failure', {
     error: error[0],

@@ -3,16 +3,12 @@ const ensureLoggedIn = require('connect-ensure-login').ensureLoggedIn();
 const router = express.Router();
 
 const { middleware } = require('../middleware');
-// console.log(middleware);
 
-router.get('/', ensureLoggedIn, middleware.playlist.readAll(),(req, res) => {
-  // console.log(res.locals.playlist);
+router.get('/', ensureLoggedIn, middleware.playlist.readAll(), (req, res) => {
   res.render('admin', {
     user: req.user,
     userProfile: JSON.stringify(req.user, null, '  '),
-    playlists: res.locals.playlists||{},
-    // playlistArray: JSON.stringify(res.locals.playlist)||{},
-    // results: []
+    playlists: res.locals.playlists || {}
   });
 });
 

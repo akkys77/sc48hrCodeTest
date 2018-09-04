@@ -3,7 +3,7 @@ const passport = require('passport');
 const { config } = require('../config');
 
 const { inspect } = require('util');
-// LoggedIn Middleware function used to store user information
+
 const loggedIn = (req, res, next) => {
   if (!res.hasOwnProperty('locals')) {
     res.locals = {};
@@ -14,11 +14,10 @@ const loggedIn = (req, res, next) => {
     typeof req.session.passport.user !== 'undefined'
   ) {
     res.locals.loggedIn = true;
+    if (!res.locals.user) {
+      res.locals.user = req.session.passport.user;
+    }
   }
-  if (!res.locals.user) {
-    res.locals.user = req.user;
-  }
-  // console.log('in LoggedIn:', inspect(res.locals));
   next();
 };
 
@@ -60,7 +59,6 @@ const getAuth0Info = () => {
 };
 
 const authenticate = (req, res, next) => {
-  console.log('do not forget to specify redirect url from env')
   return passport.authenticate('normal', {
     clientID: config.auth0Client,
     domain: config.auth0Domain,
@@ -73,7 +71,6 @@ const authenticate = (req, res, next) => {
 };
 
 const authenticateAdmin = (req, res, next) => {
-  console.log('do not forget to specify redirect url from env')
   return passport.authenticate('admin', {
     clientID: config.auth0AdminClient,
     domain: config.auth0Domain,

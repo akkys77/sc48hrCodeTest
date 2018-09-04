@@ -5,4 +5,11 @@ block content
     if loggedIn
       h4 You are logged in!
     else
-      h4 You are not logged in! Please #[a(href="/login") Log In] to continue.
+      h2.p-3.text-center Spotify/Facebook playlist maker
+      .d-flex.justify-content-center
+        a(href='https://developer.spotify.com/dashboard/login' target='_blank')
+          img(src='/images/Spotify_Icon_RGB_Green.png' width='250px' height='250px' alt="Spotify Logo").p-3
+        a(href='https://developers.facebook.com/' target='_blank')
+          img(src='/images/flogo_RGB_HEX-512.png' width='250px' height='250px' alt="Facebook Logo").p-3
+
+      h3.text-center You are not logged in! Please #[a(href="/login") Log In] to continue.

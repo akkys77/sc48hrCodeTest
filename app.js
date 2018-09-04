@@ -18,8 +18,7 @@ const user = require('./routes/user');
 const admin = require('./routes/admin');
 const { config } = require('./config');
 
-// console.log(middleware);
-// This will configure Passport to use Auth0
+// This will configure Passport to use Auth0 for user access
 const strategy = new Auth0Strategy(
   {
     domain: config.auth0Domain,
@@ -35,6 +34,7 @@ const strategy = new Auth0Strategy(
   }
 );
 
+// This will configure Passport to use Auth0 for admin access
 const strategyAdmin = new Auth0Strategy(
   {
     domain: config.auth0Domain,
@@ -70,14 +70,13 @@ app.use(cors());
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
-// uncomment after placing your favicon in /public
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(
   session({
-    secret: 'shhhhhhhhh',
+    secret: 'am0d1kpbKkrsPKYbsaoL',
     resave: true,
     saveUninitialized: true
   })
@@ -86,7 +85,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 // Check logged in
 app.use(middleware.getAuth0Info.loggedIn);
-// app.use(middleware.getAuth0Info.getAuth0Info());
+
 app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(express.static(path.join(__dirname, 'public')));
 

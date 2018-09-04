@@ -12,6 +12,9 @@ const config = {
   // The port your web application will run on
   port: process.env.PORT || 3000,
 
+  //Spotify
+  spotifyClientId: process.env.SPOTIFY_CLIENT_ID,
+  spotifyClientSecret: process.env.SPOTIFY_CLIENT_SECRET,
   // Auth0
   auth0Domain: process.env.AUTH0_DOMAIN,
   auth0Client: process.env.AUTH0_CLIENT_ID,
@@ -21,7 +24,6 @@ const config = {
   auth0AdminClient: process.env.AUTH0_ADMIN_CLIENT_ID,
   auth0AdminClientSecret: process.env.AUTH0_ADMIN_CLIENT_SECRET,
   auth0AdminCallbackUrl: process.env.NODE_ENV==='development'?'http://localhost:3000/admin/callback':process.env.AUTH0_ADMIN_CALLBACK_URL,
-  auth0AdminRedirect:process.env.NODE_ENV === 'development'?'http://localhost:3000/admin':process.env.AUTH0_ADMIN_REDIRECT,
+  auth0AdminRedirect: process.env.NODE_ENV === 'development'?'http://localhost:3000/admin':process.env.AUTH0_ADMIN_REDIRECT,
 };
-// console.log(config);
 module.exports = { config };
